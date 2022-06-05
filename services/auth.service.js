@@ -3,11 +3,11 @@ const jwt = require("jsonwebtoken");
 
 module.exports = {
   generateToken: async (id, email) => {
-    let expiry = Math.floor(Date.now() / 1000) + (60 * 60 * 24 * 365)
-    let token = jwt.sign({ exp: expiry, data: { id: id, email: email } }, process.env.SECRET);
+    let token = jwt.sign({ data: { id: id, email: email } }, "SECRET", {expiresIn: '24h'});
     token = "Bearer " + token;
     return token
   },
+
   getUser: async(id, email) => {
     let query = {};
     if(id) query._id = id;
@@ -15,16 +15,14 @@ module.exports = {
     let user = await User.findOne(query);
     return user;
   },
+
   signUp: async (data) => {
     let user = await User.create(data);
     return user;
   },
+
   updateUser: async (id, data) => {
     let user = await User.findByIdAndUpdate({_id: id}, data);
     return user;
   },
-  resetPass: async (id) => {
-    let user = await User.findOne({reset_password_hash: id});
-    return user;
-  }
 }
